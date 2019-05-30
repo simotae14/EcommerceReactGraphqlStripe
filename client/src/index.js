@@ -35,3 +35,8 @@ const Root = () => (
 
 ReactDOM.render(<Root />, document.getElementById('root'));
 registerServiceWorker();
+
+// hot reload
+if (module.hot) {
+    module.hot.accept();
+}
