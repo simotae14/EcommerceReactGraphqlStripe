@@ -16,6 +16,7 @@ const Navbar = () => {
             { /* Signin Link */ }
             <NavLink
                 to="/signin"
+                activeClassName="active"
             >
                 <Text
                     size="xl"
@@ -27,6 +28,8 @@ const Navbar = () => {
             { /* Title & Logo */ }
             <NavLink
                 to="/"
+                exact
+                activeClassName="active"
             >
                 <Box
                     display="flex"
@@ -55,6 +58,7 @@ const Navbar = () => {
             { /* Signup Link */ }
             <NavLink
                 to="/signup"
+                activeClassName="active"
             >
                 <Text
                     size="xl"
