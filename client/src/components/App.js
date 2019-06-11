@@ -42,8 +42,15 @@ class App extends Component {
     });
   }
 
+  filteredBrands = ({ searchTerm, brands }) => {
+    return brands.filter(brand => {
+      return brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      brand.description.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  }
+
   render() {
-    const { brands, searchTerm } = this.state;
+    const { searchTerm } = this.state;
     return (
       <Container>
         {/* Brands Search Field */}
@@ -57,6 +64,7 @@ class App extends Component {
             accessibilityLabel="Brands Search Field"
             onChange={this.handleChange}
             placeholder="Search Brands"
+            value={searchTerm}
           />
           <Box
             margin={3}
@@ -96,7 +104,7 @@ class App extends Component {
           wrap
         >
           {
-            brands.map( brand => (
+            this.filteredBrands(this.state).map( brand => (
               <Box
                 margin={2}
                 width={200}
