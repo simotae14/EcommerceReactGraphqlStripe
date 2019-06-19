@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Strapi from 'strapi-sdk-javascript/build/main';
-import { Box, Heading, Text, Image, Card, Button } from 'gestalt';
+import { Box, Heading, Text, Image, Card, Button, Mask } from 'gestalt';
+import { Link } from 'react-router-dom';
 const apiUrl = process.env.API_URL || 'http://localhost:1337';
 const strapi = new Strapi(apiUrl);
 
@@ -8,7 +9,8 @@ class Brews extends Component {
     // create the state of the components
     state = {
         brews: [],
-        brand: ''
+        brand: '',
+        cartItems: []
     }
     async componentDidMount() {
         //console.log(this.props.match.params.brandId);
@@ -44,7 +46,8 @@ class Brews extends Component {
     render() {
         const {
             brand,
-            brews
+            brews,
+            cartItems
         } = this.state;
         return (
             <Box
@@ -52,6 +55,11 @@ class Brews extends Component {
                 display="flex"
                 justifyContent="center"
                 alignItems="start"
+                dangerouslySetInlineStyle={{
+                    __style: {
+                        flexWrap: 'wrap-reverse'
+                    }
+                }}
             >
                 {/* Brews Section */}
                 <Box
@@ -148,6 +156,69 @@ class Brews extends Component {
                             ))
                         }
                     </Box>
+                </Box>
+                {/* User Cart */}
+                <Box
+                    marginTop={2}
+                    marginLeft={8}
+                    alignSelf="end"
+                >
+                    <Mask
+                        shape="rounded"
+                        wash
+                    >
+                        <Box
+                            display="flex"
+                            direction="column"
+                            alignItems="center"
+                            padding={2}
+                        >
+                            {/* User Cart Heading */}
+                            <Heading
+                                align="center"
+                                size="md"
+                            >
+                                Your Cart
+                            </Heading>
+                            <Text
+                                color="gray"
+                                italic
+                            >
+                                {
+                                    cartItems.length
+                                } items selected
+                            </Text>
+                            {/* Cart Items (will add) */}
+                            <Box
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                direction="column"
+                            >
+                                <Box
+                                    margin={2}
+                                >
+                                    {
+                                        cartItems.length === 0 && (
+                                            <Text
+                                                color="red"
+                                            >
+                                                Please select some items
+                                            </Text>
+                                        )
+                                    }
+                                </Box>
+                                <Text
+                                    size="lg"
+                                >
+                                    Total: $3.99
+                                </Text>
+                                <Text>
+                                    <Link to="/checkout">Checkout</Link>
+                                </Text>
+                            </Box>
+                        </Box>
+                    </Mask>
                 </Box>
             </Box>
         )
