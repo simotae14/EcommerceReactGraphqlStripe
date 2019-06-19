@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Strapi from 'strapi-sdk-javascript/build/main';
-import { Box, Heading, Text, Image, Card, Button, Mask } from 'gestalt';
+import { Box, Heading, Text, Image, Card, Button, Mask, IconButton } from 'gestalt';
+import { calculatePrice } from '../utils';
 import { Link } from 'react-router-dom';
 const apiUrl = process.env.API_URL || 'http://localhost:1337';
 const strapi = new Strapi(apiUrl);
@@ -42,6 +43,34 @@ class Brews extends Component {
         } catch (error) {
             console.error(error);
         }
+    }
+    // handler add to Cart
+    addToCart = brew => {
+        // check if a brew is already in the cart
+        const alreadyInCart = this.state.cartItems.findIndex( item => item._id === brew._id );
+
+        if (alreadyInCart === -1) {
+            const updatedItems = this.state.cartItems.concat({
+                ...brew,
+                quantity: 1
+            });
+            this.setState({
+                cartItems: updatedItems
+            });
+        } else {
+            const updatedItems = [...this.state.cartItems];
+            updatedItems[alreadyInCart].quantity += 1;
+            this.setState({
+                cartItems: updatedItems
+            });
+        }
+    }
+    // handler to delete the item from cart
+    deleteItemFromCart = itemToDeleteId => {
+        const filteredItems = this.state.cartItems.filter(item => item._id !== itemToDeleteId);
+        this.setState({
+            cartItems: filteredItems
+        });
     }
     render() {
         const {
@@ -144,12 +173,12 @@ class Brews extends Component {
                                                     size="xl"
                                                 >
                                                     <Button
+                                                        onClick={() => this.addToCart(brew) }
                                                         color="blue"
                                                         text="Add to Cart"
                                                     />
                                                 </Text>
                                             </Box>
-
                                         </Box>
                                     </Card>
                                 </Box>
@@ -188,7 +217,27 @@ class Brews extends Component {
                                     cartItems.length
                                 } items selected
                             </Text>
-                            {/* Cart Items (will add) */}
+                            {/* Cart Items */}
+                            {
+                                cartItems.map(item => (
+                                    <Box
+                                        key={item._id}
+                                        display="flex"
+                                        alignItems="center"
+                                    >
+                                        <Text>
+                                            { item.name } x { item.quantity } - ${ (item.quantity * item.price).toFixed(2) }
+                                        </Text>
+                                        <IconButton
+                                            accessibilityLabel="Delete Item"
+                                            icon="cancel"
+                                            size="sm"
+                                            iconColor="red"
+                                            onClick={() => this.deleteItemFromCart(item._id)}
+                                        />
+                                    </Box>
+                                ))
+                            }
                             <Box
                                 display="flex"
                                 alignItems="center"
@@ -211,7 +260,7 @@ class Brews extends Component {
                                 <Text
                                     size="lg"
                                 >
-                                    Total: $3.99
+                                    Total: ${calculatePrice(cartItems)}
                                 </Text>
                                 <Text>
                                     <Link to="/checkout">Checkout</Link>
