@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Strapi from 'strapi-sdk-javascript/build/main';
 import { Box, Heading, Text, Image, Card, Button, Mask, IconButton } from 'gestalt';
-import { calculatePrice } from '../utils';
+import { calculatePrice, getCart, setCart } from '../utils';
 import { Link } from 'react-router-dom';
 const apiUrl = process.env.API_URL || 'http://localhost:1337';
 const strapi = new Strapi(apiUrl);
@@ -38,7 +38,8 @@ class Brews extends Component {
             // update the state with the brews and the brand retrieved
             this.setState({
                 brews: response.data.brand.brews,
-                brand: response.data.brand.name
+                brand: response.data.brand.name,
+                cartItems: getCart()
             })
         } catch (error) {
             console.error(error);
@@ -56,12 +57,16 @@ class Brews extends Component {
             });
             this.setState({
                 cartItems: updatedItems
+            }, () => {
+                setCart(updatedItems);
             });
         } else {
             const updatedItems = [...this.state.cartItems];
             updatedItems[alreadyInCart].quantity += 1;
             this.setState({
                 cartItems: updatedItems
+            }, () => {
+                setCart(updatedItems);
             });
         }
     }
@@ -70,6 +75,8 @@ class Brews extends Component {
         const filteredItems = this.state.cartItems.filter(item => item._id !== itemToDeleteId);
         this.setState({
             cartItems: filteredItems
+        }, () => {
+            setCart(filteredItems)
         });
     }
     render() {
@@ -205,7 +212,7 @@ class Brews extends Component {
                             {/* User Cart Heading */}
                             <Heading
                                 align="center"
-                                size="md"
+                                size="sm"
                             >
                                 Your Cart
                             </Heading>
